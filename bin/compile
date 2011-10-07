@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir>
+
+set -e
+
+function message {
+  echo "$1"
+  sync
+}
+
+BIN_DIR=$(cd $(dirname $0); pwd) # absolute path
+
+BUILD_DIR=$1
+CACHE_DIR=$2
+
+unset GIT_DIR
+cd $BUILD_DIR
+
+if [ ! -e "rebar" ]; then
+  cp $BIN_DIR/../opt/rebar ./
+fi
+
+message "-----> Building with Rebar"
+./rebar get-deps compile 2>&1 | sed -u 's/^/       /'
+[ "${PIPESTATUS[*]}" = "0 0" ]
+
