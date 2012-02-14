@@ -17,6 +17,7 @@ unset GIT_DIR
 cd $BUILD_DIR
 
 if [ ! -e "rebar" ]; then
+  message "-----> Installing Rebar from buildpack"
   cp $BIN_DIR/../opt/rebar ./
 fi
 
