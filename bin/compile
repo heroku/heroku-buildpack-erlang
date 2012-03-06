@@ -4,7 +4,7 @@
 # usage: bin/compile <build-dir> <cache-dir>
 
 set -e
-
+bpdir=`pwd`
 mkdir -p "$1" "$2"
 build=$(cd "$1/" && pwd)
 test -z ${build} && exit
@@ -41,7 +41,7 @@ cd $build
 
 if [ ! -e "rebar" ]; then
   echo "-----> Installing Rebar from buildpack"
-  cp $BIN_DIR/../opt/rebar ./
+  cp ${bpdir}/opt/rebar ./
 fi
 
 echo "-----> Building with Rebar"
