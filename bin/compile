@@ -24,13 +24,13 @@ echo "-----> Using Erlang/OTP $ver"
 
     rm -rf ${cache}/* # be sure not to build up cruft
     cd ${cache}
-    echo "-----> Fetching Erlang/OTP $ver"
+    echo "-------> Fetching Erlang/OTP $ver"
     curl -sO https://s3.amazonaws.com/heroku-buildpack-erlang/${tarball}
-
+    echo "-------> Unpacking Erlang/OTP $ver"
     tar jxf ${tarball}
     rm -f ${tarball}
     cd ${ERLROOT}
-    echo "-----> Installing Erlang/OTP $ver"
+    echo "-------> Installing Erlang/OTP $ver"
     ./Install -minimal ${ERLROOT}
 )
 
