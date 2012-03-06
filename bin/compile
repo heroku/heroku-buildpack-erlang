@@ -30,6 +30,7 @@ echo "-----> Using Erlang/OTP $ver"
     tar jxf ${tarball}
     rm -f ${tarball}
     cd ${ERLROOT}
+    echo "-----> Installing Erlang/OTP $ver"
     ./Install -minimal ${ERLROOT}
 )
 
