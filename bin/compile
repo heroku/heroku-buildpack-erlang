@@ -40,10 +40,10 @@ PATH=$ERLROOT/bin:$PATH
 cd $build
 
 if [ ! -e "rebar" ]; then
-  message "-----> Installing Rebar from buildpack"
+  echo "-----> Installing Rebar from buildpack"
   cp $BIN_DIR/../opt/rebar ./
 fi
 
-message "-----> Building with Rebar"
+echo "-----> Building with Rebar"
 ./rebar get-deps compile 2>&1 | sed -u 's/^/       /'
 [ "${PIPESTATUS[*]}" = "0 0" ]
