@@ -4,7 +4,7 @@
 # usage: bin/compile <build-dir> <cache-dir>
 
 set -e
-bpdir=`pwd`
+bpdir=$(cd $(dirname $0); pwd)
 mkdir -p "$1" "$2"
 build=$(cd "$1/" && pwd)
 test -z ${build} && exit
