@@ -1,20 +1,42 @@
-#!/usr/bin/env bash
-# bin/compile <build-dir> <cache-dir>
+#!/bin/sh
+
+##
+# usage: bin/compile <build-dir> <cache-dir>
 
 set -e
 
-function message {
-  echo "$1"
-  sync
-}
+mkdir -p "$1" "$2"
+build=$(cd "$1/" && pwd)
+test -z ${build} && exit
+cache=$(cd "$2/" && pwd)
+test -z ${cache} && exit
+ver=r15b
+tarball=${ver}.tbz2
+ERLROOT=${cache}/${ver}
 
-BIN_DIR=$(cd $(dirname $0); pwd) # absolute path
+echo "-----> Using Erlang/OTP $ver"
 
-BUILD_DIR=$1
-CACHE_DIR=$2
+(
+    set -e
 
-unset GIT_DIR
-cd $BUILD_DIR
+    # Already cached?
+    test -d $ERLROOT && exit
+
+    rm -rf ${cache}/* # be sure not to build up cruft
+    cd ${cache}
+    echo "-----> Fetching Erlang/OTP $ver"
+    curl -sO https://s3.amazonaws.com/heroku-buildpack-erlang/${tarball}
+
+    tar jxf ${tarball}
+    rm -f ${tarball}
+    cd ${ERLROOT}
+    ./Install -minimal ${ERLROOT}
+)
+
+export ERLROOT
+PATH=$ERLROOT/bin:$PATH
+
+cd $build
 
 if [ ! -e "rebar" ]; then
   message "-----> Installing Rebar from buildpack"
@@ -24,4 +46,3 @@ fi
 message "-----> Building with Rebar"
 ./rebar get-deps compile 2>&1 | sed -u 's/^/       /'
 [ "${PIPESTATUS[*]}" = "0 0" ]
-
