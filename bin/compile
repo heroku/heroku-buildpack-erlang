@@ -29,6 +29,7 @@ echo "-----> Using Erlang/OTP $ver"
 )
 
 echo "-------> Unpacking Erlang/OTP $ver"
+mkdir -p ${ERLROOT}
 tar jxf ${cache}/${tarball} -C ${ERLROOT}
 echo "-------> Installing Erlang/OTP $ver"
 ln -s ${ERLROOT} /app/otp
