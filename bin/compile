@@ -12,7 +12,7 @@ cache=$(cd "$2/" && pwd)
 test -z ${cache} && exit
 ver=r15b
 tarball=${ver}.tbz2
-ERLROOT=${cache}/${ver}
+ERLROOT=${build}/otp
 
 echo "-----> Using Erlang/OTP $ver"
 
@@ -20,22 +20,21 @@ echo "-----> Using Erlang/OTP $ver"
     set -e
 
     # Already cached?
-    test -d $ERLROOT && exit
+    test -f ${cache}/${tarball} && exit
 
     rm -rf ${cache}/* # be sure not to build up cruft
     cd ${cache}
     echo "-------> Fetching Erlang/OTP $ver"
     curl -sO https://s3.amazonaws.com/heroku-buildpack-erlang/${tarball}
-    echo "-------> Unpacking Erlang/OTP $ver"
-    tar jxf ${tarball}
-    rm -f ${tarball}
-    cd ${ERLROOT}
-    echo "-------> Installing Erlang/OTP $ver"
-    ./Install -minimal ${ERLROOT}
 )
 
-export ERLROOT
-PATH=$ERLROOT/bin:$PATH
+echo "-------> Unpacking Erlang/OTP $ver"
+tar jxf ${tarball} -C ${ERLROOT}
+echo "-------> Installing Erlang/OTP $ver"
+ln -s ${ERLROOT} /app/otp
+${ERLROOT}/Install -minimal /app/otp
+
+PATH=/app/otp/bin:$PATH
 
 cd $build
 
@@ -46,4 +45,4 @@ fi
 
 echo "-----> Building with Rebar"
 unset GIT_DIR
-./rebar get-deps compile 2>&1 | sed -u 's/^/       /'
+(./rebar get-deps compile 2>&1 | sed -u 's/^/       /') || exit 1
