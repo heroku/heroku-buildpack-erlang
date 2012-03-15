@@ -3,5 +3,5 @@
 cat << EOF
 ---
 config_vars:
-  PATH: bin:/usr/bin:/bin:/usr/local/lib/erlang/bin
+  PATH: /app/otp/bin:bin:/usr/bin:/bin
 EOF
