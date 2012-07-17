@@ -10,8 +10,8 @@ build=$(cd "$1/" && pwd)
 test -z ${build} && exit
 cache=$(cd "$2/" && pwd)
 test -z ${cache} && exit
-ver=r15b
-tarball=${ver}.tbz2
+ver=R16B
+tarball=master.tgz
 ERLROOT=${build}/otp
 
 echo "-----> Using Erlang/OTP $ver"
@@ -30,7 +30,7 @@ echo "-----> Using Erlang/OTP $ver"
 
 echo "-------> Unpacking Erlang/OTP $ver"
 mkdir -p ${ERLROOT}
-tar jxf ${cache}/${tarball} -C ${ERLROOT} --strip-components=1
+tar jzf ${cache}/${tarball} -C ${ERLROOT} --strip-components=1
 echo "-------> Installing Erlang/OTP $ver"
 ln -s ${ERLROOT} /app/otp
 ${ERLROOT}/Install -minimal /app/otp
