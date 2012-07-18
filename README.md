@@ -3,11 +3,29 @@
 This is a Heroku buildpack for Erlang apps. It uses [Rebar](https://github.com/basho/rebar).
 
 
-### Usage
+### Configure your Heroku App
 
-    $ git clone https://github.com/JacobVorreuter/hello-erlang.git
-    $ cd hello-erlang
-    $ heroku create test-erlang-app -s cedar
-    $ heroku config:add BUILDPACK_URL=http://github.com/heroku/heroku-buildpack-erlang.git
+    $ heroku config:add BUILDPACK_URL="https://github.com/archaelus/heroku-buildpack-erlang.git#bleeding_edge" -a YOUR_APP
+
+or
+    $ heroku create --buildpack "https://github.com/archaelus/heroku-buildpack-erlang.git#bleeding_edge"
+
+Then:
+
+    $ heroku labs:enable user_env_compile -a YOUR_APP
+
+### Select an Erlang version
+
+Currently supported:
+
+* master (R15B02 pre)
+* master-pu (R16B pre)
+* OTP_R15B
+* OTP_R15B01
+* OTP_R15B02
+
+### Build your Heroku App
+
     $ git push heroku master
-    $ curl http://test-erlang-app.herokuapp.com/
+
+You may need to write a new commit and push if your code was already up to date.
