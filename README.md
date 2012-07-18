@@ -24,6 +24,10 @@ Currently supported:
 * OTP_R15B01
 * OTP_R15B02
 
+Select the version for your app:
+
+    heroku config:add OTP_VERSION=OTP_R15B01 -a YOUR_APP
+
 ### Build your Heroku App
 
     $ git push heroku master
