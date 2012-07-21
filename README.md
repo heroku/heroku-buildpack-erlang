@@ -10,13 +10,11 @@ This is a Heroku buildpack for Erlang apps. It uses [Rebar](https://github.com/b
 or
     $ heroku create --buildpack "https://github.com/archaelus/heroku-buildpack-erlang.git#bleeding_edge"
 
-Then:
-
-    $ heroku labs:enable user_env_compile -a YOUR_APP
-
 ### Select an Erlang version
 
-Currently supported:
+The Erlang/OTP release version that will be used to build and run your application is now sourced from a dotfile called `.preferred_otp_version`. It needs to be the branch or tag name from the http://github.com/erlang/otp repository, and further, needs to be one of the versions that precompiled binaries are available for.
+
+Currently supported OTP versions:
 
 * master (R15B02 pre)
 * master-pu (R16B pre)
@@ -24,9 +22,10 @@ Currently supported:
 * OTP_R15B01
 * OTP_R15B02
 
-Select the version for your app:
+To select the version for your app:
 
-    heroku config:add OTP_VERSION=OTP_R15B01 -a YOUR_APP
+    $ echo OTP_R15B01 > .preferred_otp_version
+    $ git commit "Select R15B01 as preferred OTP version" .preferred_otp_version
 
 ### Build your Heroku App
 
