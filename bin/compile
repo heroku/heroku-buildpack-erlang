@@ -11,7 +11,7 @@ test -z ${build} && exit
 cache=$(cd "$2/" && pwd)
 test -z ${cache} && exit
 DEFAULT_OTP_VERSION="master"
-OTP_VERSION=$(${bpdir}/opt/preferred_erlang_version.erl "${DEFAULT_OTP_VERSION}")
+OTP_VERSION=$(${bpdir}/opt/preferred_otp_version.erl "${DEFAULT_OTP_VERSION}")
 ver=${OTP_VERSION:=${DEFAULT_OTP_VERSION}}
 tarball=${ver}.tgz
 OTP_TARBALL_URL="https://s3.amazonaws.com/heroku-buildpack-erlang/${tarball}"
