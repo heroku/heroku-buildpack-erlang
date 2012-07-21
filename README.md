@@ -5,10 +5,10 @@ This is a Heroku buildpack for Erlang apps. It uses [Rebar](https://github.com/b
 
 ### Configure your Heroku App
 
-    $ heroku config:add BUILDPACK_URL="https://github.com/archaelus/heroku-buildpack-erlang.git#bleeding_edge" -a YOUR_APP
+    $ heroku config:add BUILDPACK_URL="https://github.com/archaelus/heroku-buildpack-erlang.git" -a YOUR_APP
 
 or
-    $ heroku create --buildpack "https://github.com/archaelus/heroku-buildpack-erlang.git#bleeding_edge"
+    $ heroku create --buildpack "https://github.com/archaelus/heroku-buildpack-erlang.git"
 
 ### Select an Erlang version
 
