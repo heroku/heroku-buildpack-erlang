@@ -41,6 +41,7 @@ ln -s ${ERLROOT} /app/otp
 ${ERLROOT}/Install -minimal /app/otp
 
 PATH=/app/otp/bin:$PATH
+export PATH
 
 cd $build
 
