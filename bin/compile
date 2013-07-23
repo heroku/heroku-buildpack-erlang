@@ -16,6 +16,10 @@ CACHE_DIR=$2
 unset GIT_DIR
 cd $BUILD_DIR
 
+message "-----> Deprecated buildpack!"
+message "       Please use https://github.com/archaelus/heroku-buildpack-erlang"
+message "       instead as it is more actively maintained.\n"
+
 if [ ! -e "rebar" ]; then
   message "-----> Installing Rebar from buildpack"
   cp $BIN_DIR/../opt/rebar ./
