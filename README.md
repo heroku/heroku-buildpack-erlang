@@ -25,7 +25,7 @@ Currently supported OTP versions:
 To select the version for your app:
 
     $ echo OTP_R15B01 > .preferred_otp_version
-    $ git commit "Select R15B01 as preferred OTP version" .preferred_otp_version
+    $ git commit -m "Select R15B01 as preferred OTP version" .preferred_otp_version
 
 ### Build your Heroku App
 
