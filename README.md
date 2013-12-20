@@ -21,6 +21,9 @@ Currently supported OTP versions:
 * OTP_R15B
 * OTP_R15B01
 * OTP_R15B02
+* OTP_R16B
+* OTP_R16B01
+* OTP_R16B02
 
 To select the version for your app:
 
