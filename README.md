@@ -16,7 +16,7 @@ The Erlang/OTP release version that will be used to build and run your applicati
 
 Currently supported OTP versions:
 
-* master (R15B02 pre)
+* master (R17B pre)
 * master-pu (R16B pre)
 * OTP_R15B
 * OTP_R15B01
@@ -24,6 +24,7 @@ Currently supported OTP versions:
 * OTP_R16B
 * OTP_R16B01
 * OTP_R16B02
+* OTP_R16B03
 
 To select the version for your app:
 
