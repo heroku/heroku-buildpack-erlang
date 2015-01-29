@@ -5,10 +5,10 @@ This is a Heroku buildpack for Erlang apps. It uses [Rebar](https://github.com/b
 
 ### Configure your Heroku App
 
-    $ heroku config:add BUILDPACK_URL="https://github.com/archaelus/heroku-buildpack-erlang.git" -a YOUR_APP
+    $ heroku config:add BUILDPACK_URL="https://github.com/heroku/heroku-buildpack-erlang.git" -a YOUR_APP
 
 or
-    $ heroku create --buildpack "https://github.com/archaelus/heroku-buildpack-erlang.git"
+    $ heroku create --buildpack "https://github.com/heroku/heroku-buildpack-erlang.git"
 
 ### Select an Erlang version
 
@@ -16,8 +16,8 @@ The Erlang/OTP release version that will be used to build and run your applicati
 
 Currently supported OTP versions:
 
-* master (R17B pre)
-* master-pu (R16B pre)
+cedar:
+
 * OTP_R15B
 * OTP_R15B01
 * OTP_R15B02
@@ -25,11 +25,25 @@ Currently supported OTP versions:
 * OTP_R16B01
 * OTP_R16B02
 * OTP_R16B03
+* OTP_R16B03-1
+* OTP-17.0
+* OTP-17.1
+* OTP-17.2
+* OTP-17.3
+
+cedar-14:
+
+* OTP_R15B02
+* OTP_R16B03-1
+* OTP-17.3.4
+* OTP-17.4
+
+Please let us know if you'd like some other version supported.  We'll attempt to keep up to date with the official releases.
 
 To select the version for your app:
 
-    $ echo OTP_R15B01 > .preferred_otp_version
-    $ git commit -m "Select R15B01 as preferred OTP version" .preferred_otp_version
+    $ echo OTP-17.4 > .preferred_otp_version
+    $ git commit -m "Select 17.4 as preferred OTP version" .preferred_otp_version
 
 ### Build your Heroku App
 
