@@ -14,7 +14,9 @@ or
 
 The Erlang/OTP release version that will be used to build and run your application is now sourced from a dotfile called `.preferred_otp_version`. It needs to be the branch or tag name from the http://github.com/erlang/otp repository, and further, needs to be one of the versions that precompiled binaries are available for.
 
-Currently supported OTP versions:
+When you fail to specify the version, the version marked with a `*` will be used. this may vary per stack.
+
+Currently supported OTP versions (please note that cedar will receive no more updates):
 
 cedar:
 
@@ -29,16 +31,16 @@ cedar:
 * OTP-17.0
 * OTP-17.1
 * OTP-17.2
-* OTP-17.3
+* OTP-17.3 *
 
 cedar-14:
 
 * OTP_R15B02
 * OTP_R16B03-1
 * OTP-17.3.4
-* OTP-17.4
+* OTP-17.4 *
 
-Please let us know if you'd like some other version supported.  We'll attempt to keep up to date with the official releases.
+Please let us know (routing-feedback@heroku.com) if you'd like some other version supported.  We'll attempt to keep up to date with the official releases.
 
 To select the version for your app:
 
