@@ -1,31 +1,86 @@
-#!/usr/bin/env bash
-# bin/compile <build-dir> <cache-dir>
+#!/bin/bash
+
+##
+# usage: bin/compile <build-dir> <cache-dir>
 
 set -e
+bpdir=$(cd $(dirname $(dirname $0)); pwd)
+mkdir -p "$1" "$2"
+build=$(cd "$1/" && pwd)
+test -z ${build} && exit
+cache=$(cd "$2/" && pwd)
+test -z ${cache} && exit
+DEFAULT_OTP_VERSION="master"
+if [ -f ${build}/.preferred_otp_version ]; then
+    OTP_VERSION=$(cat ${build}/.preferred_otp_version)
+fi
+ver=${OTP_VERSION:=${DEFAULT_OTP_VERSION}}
+case $STACK in
+    cedar-14)
+        tarball="${ver}_cedar-14.tgz"
+        location="runtimes/"
+        strip=""
+        ;;
+    *)
+        tarball="${ver}.tgz"
+        location=""
+        strip="--strip-components=2"
+        ;;
+esac
+OTP_TARBALL_URL="https://s3.amazonaws.com/heroku-buildpack-erlang/${location}${tarball}"
+ERLROOT=${build}/otp
+PROFILE=${HOME}/.profile.d
 
-function message {
-  echo "$1"
-  sync
-}
+echo "-----> Using Erlang/$ver"
 
-BIN_DIR=$(cd $(dirname $0); pwd) # absolute path
+(
+    set -e
 
-BUILD_DIR=$1
-CACHE_DIR=$2
+    # Already cached?
+    test -f ${cache}/${tarball} && exit
 
-unset GIT_DIR
-cd $BUILD_DIR
+    rm -rf ${cache}/* # be sure not to build up cruft
+    cd ${cache}
+    echo "-------> Fetching Erlang/$ver"
+    curl -sSO ${OTP_TARBALL_URL}
+
+    echo "-------> Finished fetching tarball, checking"
+    file ${tarball} | grep -ql gzip
+
+)
+
+echo "-------> Unpacking Erlang/OTP $ver"
+mkdir -p ${ERLROOT}
+tar zxf ${cache}/${tarball} -C ${ERLROOT} ${strip}
+echo "-------> Installing Erlang/OTP $ver"
+ln -s ${ERLROOT} /app/otp
+${ERLROOT}/Install -minimal /app/otp
+
+PATH=/app/otp/bin:$PATH
+export PATH
+
+cd $build
 
 message "-----> Deprecated buildpack!"
 message "       Please use https://github.com/archaelus/heroku-buildpack-erlang"
 message "       instead as it is more actively maintained.\n"
 
 if [ ! -e "rebar" ]; then
-  message "-----> Installing Rebar from buildpack"
-  cp $BIN_DIR/../opt/rebar ./
+  echo "-----> Installing Rebar from buildpack"
+  cp ${bpdir}/opt/rebar ./
 fi
 
-message "-----> Building with Rebar"
+echo "-----> Building with Rebar"
+unset GIT_DIR
 ./rebar get-deps compile 2>&1 | sed -u 's/^/       /'
-[ "${PIPESTATUS[*]}" = "0 0" ]
+if [ ${PIPESTATUS[0]} -ne 0 ]; then
+  echo "-----> Build failed"
+  exit 1
+fi
 
+if [ -f ${bpdir}/opt/otp.sh ]; then
+  mkdir -p ${PROFILE}
+  cp ${bpdir}/opt/otp.sh ${PROFILE}
+fi
+
+echo "-----> Build succeeded"
