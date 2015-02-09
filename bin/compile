@@ -61,10 +61,6 @@ export PATH
 
 cd $build
 
-message "-----> Deprecated buildpack!"
-message "       Please use https://github.com/archaelus/heroku-buildpack-erlang"
-message "       instead as it is more actively maintained.\n"
-
 if [ ! -e "rebar" ]; then
   echo "-----> Installing Rebar from buildpack"
   cp ${bpdir}/opt/rebar ./
