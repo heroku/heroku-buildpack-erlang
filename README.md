@@ -2,16 +2,6 @@
 
 This is a Heroku buildpack for Erlang apps. It uses [Rebar](https://github.com/basho/rebar).
 
-## DEPRECATED
-
-This repository is not maintained. Please see
-[this fork](https://github.com/archaelus/heroku-buildpack-erlang)
-which is actively maintained.
-
-You can switch your app over to the new buildpack like so:
-
-    $ heroku config:add BUILDPACK_URL=git://github.com/archaelus/heroku-buildpack-erlang.git
-
 ### Configure your Heroku App
 
     $ heroku config:add BUILDPACK_URL="https://github.com/heroku/heroku-buildpack-erlang.git" -a YOUR_APP
@@ -27,6 +17,13 @@ When you fail to specify the version, the version marked with a `*` will be used
 
 Currently supported OTP versions (please note that cedar will receive no more updates):
 
+cedar-14:
+
+* OTP_R15B02
+* OTP_R16B03-1
+* OTP-17.3.4
+* OTP-17.4 *
+
 cedar:
 
 * OTP_R15B
@@ -41,13 +38,6 @@ cedar:
 * OTP-17.1
 * OTP-17.2
 * OTP-17.3 *
-
-cedar-14:
-
-* OTP_R15B02
-* OTP_R16B03-1
-* OTP-17.3.4
-* OTP-17.4 *
 
 Please let us know (routing-feedback@heroku.com) if you'd like some other version supported.  We'll attempt to keep up to date with the official releases.
 
