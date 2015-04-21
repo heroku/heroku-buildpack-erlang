@@ -23,7 +23,10 @@ cedar-14:
 * OTP_R15B02
 * OTP_R16B03-1
 * OTP-17.3.4
-* OTP-17.4 *
+* OTP-17.4
+* OTP-17.4.1
+* OTP-17.5.1 *
+* OTP-18.0-rc1
 
 cedar:
 
@@ -44,8 +47,8 @@ Please let us know (routing-feedback@heroku.com) if you'd like some other versio
 
 To select the version for your app:
 
-    $ echo OTP-17.4 > .preferred_otp_version
-    $ git commit -m "Select 17.4 as preferred OTP version" .preferred_otp_version
+    $ echo OTP-17.5.1 > .preferred_otp_version
+    $ git commit -m "Select 17.5.1 as preferred OTP version" .preferred_otp_version
 
 ### Build your Heroku App
 
