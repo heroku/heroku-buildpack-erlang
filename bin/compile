@@ -17,11 +17,13 @@ fi
 ver=${OTP_VERSION:=${DEFAULT_OTP_VERSION}}
 case $STACK in
     cedar-14)
+        echo "-----> Stack is cedar-14"
         tarball="${ver}_cedar-14.tgz"
         location="runtimes/"
         strip=""
         ;;
     *)
+        echo "-----> Stack is cedar"
         tarball="${ver}.tgz"
         location=""
         strip="--strip-components=2"
@@ -61,17 +63,45 @@ export PATH
 
 cd $build
 
+TOOL="none"
+
+## for now, prefer rebar :/
 if [ ! -e "rebar" ]; then
-  echo "-----> Installing Rebar from buildpack"
-  cp ${bpdir}/opt/rebar ./
+    if [ ! -e "rebar3" -a ! -e "rebar.lock" ]; then
+        echo "-----> Installing Rebar from buildpack"
+        cp ${bpdir}/opt/rebar ./
+        TOOL="rebar"
+    else
+        # if lockfile but no binary
+        if [ ! -e "rebar3" ]; then
+            echo "-----> Installing Rebar3 from rebar3.org nightly"
+            curl -o rebar3 https://s3.amazonaws.com/rebar3/rebar3
+            chmod +x rebar3
+        fi
+        TOOL="rebar3"
+    fi
+else
+    TOOL="rebar"
 fi
 
-echo "-----> Building with Rebar"
 unset GIT_DIR
-./rebar get-deps compile 2>&1 | sed -u 's/^/       /'
+
+case $TOOL in
+    "rebar")
+        echo "-----> Building with Rebar"
+        ./rebar get-deps compile 2>&1 | sed -u 's/^/       /'
+        ;;
+    "rebar3")
+        echo "-----> Building release with Rebar3"
+        TERM=dumb
+        ./rebar3 update
+        ./rebar3 release -i true --dev-mode false  2>&1 | sed -u 's/^/       /'
+        ;;
+esac
+
 if [ ${PIPESTATUS[0]} -ne 0 ]; then
-  echo "-----> Build failed"
-  exit 1
+    echo "-----> Build failed"
+    exit 1
 fi
 
 if [ -f ${bpdir}/opt/otp.sh ]; then

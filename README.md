@@ -1,6 +1,8 @@
 # Heroku buildpack: Erlang
 
-This is a Heroku buildpack for Erlang apps. It uses [Rebar](https://github.com/basho/rebar).
+This is a Heroku buildpack for Erlang apps. It uses [Rebar](https://github.com/rebar/rebar) or [Rebar3](https://github.com/rebar/rebar3).
+
+Which build tool to use is automatically detected.  Rebar is currently the default.  If either `rebar3` or `rebar.lock` are present, Rebar3 will be used. 
 
 ### Configure your Heroku App
 
