@@ -57,3 +57,5 @@ To select the version for your app:
     $ git push heroku master
 
 You may need to write a new commit and push if your code was already up to date.
+
+NOTE: You need to have either an ebin/ directory or rebar.config checked into Git in order for Heroku to identify this project as an Erlang app it can build.
