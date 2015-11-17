@@ -10,103 +10,161 @@ build=$(cd "$1/" && pwd)
 test -z ${build} && exit
 cache=$(cd "$2/" && pwd)
 test -z ${cache} && exit
-DEFAULT_OTP_VERSION="master"
-if [ -f ${build}/.preferred_otp_version ]; then
-    OTP_VERSION=$(cat ${build}/.preferred_otp_version)
-fi
-ver=${OTP_VERSION:=${DEFAULT_OTP_VERSION}}
-case $STACK in
-    cedar-14)
-        echo "-----> Stack is cedar-14"
-        tarball="${ver}_cedar-14.tgz"
-        location="runtimes/"
-        strip=""
-        ;;
-    *)
-        echo "-----> Stack is cedar"
-        tarball="${ver}.tgz"
-        location=""
-        strip="--strip-components=2"
-        ;;
-esac
-OTP_TARBALL_URL="https://s3.amazonaws.com/heroku-buildpack-erlang/${location}${tarball}"
-ERLROOT=${build}/otp
+
 PROFILE=${HOME}/.profile.d
 
-echo "-----> Using Erlang/$ver"
-
-(
-    set -e
-
-    # Already cached?
-    test -f ${cache}/${tarball} && exit
-
-    rm -rf ${cache}/* # be sure not to build up cruft
-    cd ${cache}
-    echo "-------> Fetching Erlang/$ver"
-    curl -sSO ${OTP_TARBALL_URL}
-
-    echo "-------> Finished fetching tarball, checking"
-    file ${tarball} | grep -ql gzip
-
-)
-
-echo "-------> Unpacking Erlang/OTP $ver"
-mkdir -p ${ERLROOT}
-tar zxf ${cache}/${tarball} -C ${ERLROOT} ${strip}
-echo "-------> Installing Erlang/OTP $ver"
-ln -s ${ERLROOT} /app/otp
-${ERLROOT}/Install -minimal /app/otp
-
-PATH=/app/otp/bin:$PATH
-export PATH
-
-cd $build
-
-TOOL="none"
-
-## for now, prefer rebar :/
-if [ ! -e "rebar" ]; then
-    if [ ! -e "rebar3" -a ! -e "rebar.lock" ]; then
-        echo "-----> Installing Rebar from buildpack"
-        cp ${bpdir}/opt/rebar ./
-        TOOL="rebar"
+if [ $BINARY_RELEASES ]; then
+    ROOT=${HOME}/
+    NAME=$REL_NAME
+    tarball=$NAME-$REL_VSN.tar.gz
+    if [ -d ${ROOT}/erts-${ERTS_VSN} ]; then
+        TARBALL_URL=$NAME/$REL_VSN/$ERTS_VSN/$NAME-$REL_VSN-no-erts.tar.gz
     else
-        # if lockfile but no binary
-        if [ ! -e "rebar3" ]; then
-            echo "-----> Installing Rebar3 from rebar3.org nightly"
-            curl -o rebar3 https://s3.amazonaws.com/rebar3/rebar3
-            chmod +x rebar3
-        fi
-        TOOL="rebar3"
+        mkdir -p ${PROFILE}
+        echo "export PATH=$ROOT/bin:$ROOT/erts-$ERTS_VSN/bin:$PATH" > ${PROFILE}/otp.sh
+        TARBALL_URL=$NAME/$REL_VSN/$ERTS_VSN/$NAME-$REL_VSN.tar.gz
     fi
+
+    echo "-----> Installing Erlang Release ${NAME}-${REL_VSN}"
+
+    (
+        set -e
+
+        # Already cached?
+        test -f "${cache}/${tarball}" && exit
+
+        rm -rf ${cache}/* # be sure not to build up cruft
+        cd ${cache}
+        echo "-------> Fetching Release"
+        ${bpdir}/opt/gof3r get -b $BUCKET -k "$TARBALL_URL" -p "${cache}/${tarball}" || exit 1
+    )
+
+    if [ -d ${ROOT}/releases ]; then
+        if ${ROOT}/bin/${NAME} ping; then
+            echo "-------> Installing Release"
+            cd ${ROOT}
+            mkdir -p ${ROOT}/releases/$REL_VSN/
+            cp ${cache}/${tarball} ${ROOT}/releases/$REL_VSN/$NAME.tar.gz
+
+            if [ $RELEASE_UPGRADE = true ]; then
+                ${ROOT}/bin/${NAME} upgrade $REL_VSN
+                tar -xf ${cache}/${tarball} bin
+            else
+                ${ROOT}/bin/${NAME} unpack $REL_VSN
+                tar -xf ${cache}/${tarball} bin
+            fi
+        else
+            echo "-------> Unpacking Release"
+            tar zxf ${cache}/${tarball} -C ${ROOT}
+            echo "-------> Installing Release"
+        fi
+    else
+        echo "-------> Unpacking Release"
+        tar zxf ${cache}/${tarball} -C ${ROOT}
+        echo "-------> Installing Release"
+    fi
+
+    echo "web: RELX_REPLACE_OS_VARS=true bin/\${REL_NAME}-\${REL_VSN} foreground -env ERL_CRASH_DUMP \"\${ERL_CRASH_DUMP_DIR:-\$HOME}/\${INSTANCE_NAME}_boot_\$(date -u +\"%Y-%m-%dT%H:%M:%SZ%Z\")\"" > ./Procfile
+    echo "-----> Install succeeded"
 else
-    TOOL="rebar"
+    DEFAULT_OTP_VERSION="master"
+    if [ -f ${build}/.preferred_otp_version ]; then
+        OTP_VERSION=$(cat ${build}/.preferred_otp_version)
+    fi
+    ver=${OTP_VERSION:=${DEFAULT_OTP_VERSION}}
+    case $STACK in
+        cedar-14)
+            echo "-----> Stack is cedar-14"
+            tarball="${ver}_cedar-14.tgz"
+            location="runtimes/"
+            strip=""
+            ;;
+        *)
+            echo "-----> Stack is cedar"
+            tarball="${ver}.tgz"
+            location=""
+            strip="--strip-components=2"
+            ;;
+    esac
+    OTP_TARBALL_URL="https://s3.amazonaws.com/heroku-buildpack-erlang/${location}${tarball}"
+    ERLROOT=${build}/otp
+    PROFILE=${HOME}/.profile.d
+
+    echo "-----> Using Erlang/$ver"
+
+    (
+        set -e
+
+        # Already cached?
+        test -f ${cache}/${tarball} && exit
+
+        rm -rf ${cache}/* # be sure not to build up cruft
+        cd ${cache}
+        echo "-------> Fetching Erlang/$ver"
+        curl -sSO ${OTP_TARBALL_URL}
+
+        echo "-------> Finished fetching tarball, checking"
+        file ${tarball} | grep -ql gzip
+
+    )
+
+    echo "-------> Unpacking Erlang/OTP $ver"
+    mkdir -p ${ERLROOT}
+    tar zxf ${cache}/${tarball} -C ${ERLROOT} ${strip}
+    echo "-------> Installing Erlang/OTP $ver"
+    ln -s ${ERLROOT} /app/otp
+    ${ERLROOT}/Install -minimal /app/otp
+
+    PATH=/app/otp/bin:$PATH
+    export PATH
+
+    cd $build
+
+    TOOL="none"
+
+    ## for now, prefer rebar :/
+    if [ ! -e "rebar" ]; then
+        if [ ! -e "rebar3" -a ! -e "rebar.lock" ]; then
+            echo "-----> Installing Rebar from buildpack"
+            cp ${bpdir}/opt/rebar ./
+            TOOL="rebar"
+        else
+            # if lockfile but no binary
+            if [ ! -e "rebar3" ]; then
+                echo "-----> Installing Rebar3 from rebar3.org nightly"
+                curl -o rebar3 https://s3.amazonaws.com/rebar3/rebar3
+                chmod +x rebar3
+            fi
+            TOOL="rebar3"
+        fi
+    else
+        TOOL="rebar"
+    fi
+
+    unset GIT_DIR
+
+    case $TOOL in
+        "rebar")
+            echo "-----> Building with Rebar"
+            ./rebar get-deps compile 2>&1 | sed -u 's/^/       /'
+            ;;
+        "rebar3")
+            echo "-----> Building release with Rebar3"
+            TERM=dumb
+            ./rebar3 update
+            ./rebar3 release -i true --dev-mode false  2>&1 | sed -u 's/^/       /'
+            ;;
+    esac
+
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
+        echo "-----> Build failed"
+        exit 1
+    fi
+
+    if [ -f ${bpdir}/opt/otp.sh ]; then
+        mkdir -p ${PROFILE}
+        cp ${bpdir}/opt/otp.sh ${PROFILE}
+    fi
+
+    echo "-----> Build succeeded"
 fi
-
-unset GIT_DIR
-
-case $TOOL in
-    "rebar")
-        echo "-----> Building with Rebar"
-        ./rebar get-deps compile 2>&1 | sed -u 's/^/       /'
-        ;;
-    "rebar3")
-        echo "-----> Building release with Rebar3"
-        TERM=dumb
-        ./rebar3 update
-        ./rebar3 release -i true --dev-mode false  2>&1 | sed -u 's/^/       /'
-        ;;
-esac
-
-if [ ${PIPESTATUS[0]} -ne 0 ]; then
-    echo "-----> Build failed"
-    exit 1
-fi
-
-if [ -f ${bpdir}/opt/otp.sh ]; then
-  mkdir -p ${PROFILE}
-  cp ${bpdir}/opt/otp.sh ${PROFILE}
-fi
-
-echo "-----> Build succeeded"
