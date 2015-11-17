@@ -18,11 +18,11 @@ if [ $BINARY_RELEASES ]; then
     NAME=$REL_NAME
     tarball=$NAME-$REL_VSN.tar.gz
     if [ -d ${ROOT}/erts-${ERTS_VSN} ]; then
-        TARBALL_URL=$NAME/$REL_VSN/$ERTS_VSN/$NAME-$REL_VSN-no-erts.tar.gz
+        TARBALL_URL=$NAME/$REL_VSN/$ERTS_VSN/trusty/$NAME-$REL_VSN-no-erts.tar.gz
     else
         mkdir -p ${PROFILE}
         echo "export PATH=$ROOT/bin:$ROOT/erts-$ERTS_VSN/bin:$PATH" > ${PROFILE}/otp.sh
-        TARBALL_URL=$NAME/$REL_VSN/$ERTS_VSN/$NAME-$REL_VSN.tar.gz
+        TARBALL_URL=$NAME/$REL_VSN/$ERTS_VSN/trusty/$NAME-$REL_VSN.tar.gz
     fi
 
     echo "-----> Installing Erlang Release ${NAME}-${REL_VSN}"
