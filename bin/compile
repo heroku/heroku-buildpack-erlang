@@ -137,12 +137,16 @@ else
 
     TOOL="none"
 
-    ## for now, prefer rebar :/
     if [ ! -e "rebar" ]; then
         if [ ! -e "rebar3" -a ! -e "rebar.lock" ]; then
-            echo "-----> Installing Rebar from buildpack"
-            cp ${bpdir}/opt/rebar ./
-            TOOL="rebar"
+	        if [ -e "erlang.mk" ]; then
+	            TOOL="erlang.mk"
+	        else
+                ## can't find any of the others, fall back to rebar
+                echo "-----> Installing Rebar from buildpack"
+                cp ${bpdir}/opt/rebar ./
+                TOOL="rebar"
+            fi
         else
             # if lockfile but no binary
             if [ ! -e "rebar3" ]; then
@@ -169,6 +173,10 @@ else
             ./rebar3 update
             ./rebar3 release -i true --dev-mode false  2>&1 | sed -u 's/^/       /'
             ;;
+        "erlang.mk")
+	        echo "-----> Building release with erlang.mk"
+	        make 2>&1 | sed -u 's/^/       /'
+	        ;;
     esac
 
     if [ ${PIPESTATUS[0]} -ne 0 ]; then
