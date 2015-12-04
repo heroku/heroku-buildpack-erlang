@@ -1,7 +1,10 @@
 #!/bin/sh
 
-# this pack is valid for apps with a rebar.config or ebin dir in the root
+# this pack is valid for apps with a rebar.config or ebin dir or erlang.mk in the root
 if [ -f $1/rebar.config ]; then
+  echo "Erlang"
+  exit 0
+elif [ -f $1/erlang.mk ]; then
   echo "Erlang"
   exit 0
 elif [ -d $1/ebin ]; then
