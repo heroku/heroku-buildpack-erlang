@@ -51,8 +51,7 @@ if [ $BINARY_RELEASES ]; then
         rm -rf ${cache}/* # be sure not to build up cruft
         cd ${cache}
         echo "-------> Fetching Release"
-        ${bpdir}/opt/gof3r -v
-        ${bpdir}/opt/gof3r get -b $BUCKET -k "$TARBALL_URL" -p "${cache}/${tarball}" || exit 1
+        ${bpdir}/opt/gof3r get -b $BUCKET -k "$TARBALL_URL" -p "${cache}/${tarball}" --no-md5 || exit 1
     )
 
     if [ -d ${ROOT}/releases ]; then
