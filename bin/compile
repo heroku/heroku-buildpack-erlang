@@ -1,7 +1,22 @@
 #!/bin/bash
 
 ##
-# usage: bin/compile <build-dir> <cache-dir>
+# usage: bin/compile <build-dir> <cache-dir> <env-dir>
+
+
+# export variables in <env-dir>
+# see https://devcenter.heroku.com/articles/buildpack-api#bin-compile
+
+env_dir=$3
+if [ -d "$env_dir" ]; then
+  for e in $(ls $env_dir); do
+    echo "$e" | grep -E '^(BINARY_RELEASES|BUCKET|AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|DISABLE_GIT_CHECKOUT|ERTS_VSN|REL_NAME|REL_VSN)$' &&
+    export "$e=$(cat $env_dir/$e)"
+    :
+  done
+fi
+
+# regular buildpack business
 
 set -e
 bpdir=$(cd $(dirname $(dirname $0)); pwd)
@@ -36,6 +51,7 @@ if [ $BINARY_RELEASES ]; then
         rm -rf ${cache}/* # be sure not to build up cruft
         cd ${cache}
         echo "-------> Fetching Release"
+        ${bpdir}/opt/gof3r -v
         ${bpdir}/opt/gof3r get -b $BUCKET -k "$TARBALL_URL" -p "${cache}/${tarball}" || exit 1
     )
 
