@@ -29,7 +29,7 @@ test -z ${cache} && exit
 PROFILE=${HOME}/.profile.d
 
 if [ $BINARY_RELEASES ]; then
-    ROOT=${HOME}/
+    ROOT=${build}/
     NAME=$REL_NAME
     tarball=$NAME-$REL_VSN.tar.gz
     if [ -d ${ROOT}/erts-${ERTS_VSN} ]; then
