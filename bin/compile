@@ -37,7 +37,7 @@ if [ $BINARY_RELEASES ]; then
     else
         mkdir -p ${PROFILE}
         echo "export PATH=$ROOT/bin:$ROOT/erts-$ERTS_VSN/bin:$PATH" > ${PROFILE}/otp.sh
-        if [ $DEVCLOUD ]; then
+        if [ $FETCH_LATEST ]; then
             TARBALL_URL=$NAME/$NAME-latest.tar.gz
         else
             TARBALL_URL=$NAME/$REL_VSN/$ERTS_VSN/trusty/$NAME-$REL_VSN.tar.gz
@@ -83,7 +83,11 @@ if [ $BINARY_RELEASES ]; then
         echo "-------> Installing Release"
     fi
 
-    echo "web: RELX_REPLACE_OS_VARS=true bin/\${REL_NAME}-\${REL_VSN} foreground -env ERL_CRASH_DUMP \"\${ERL_CRASH_DUMP_DIR:-\$HOME}/\${INSTANCE_NAME}_boot_\$(date -u +\"%Y-%m-%dT%H:%M:%SZ%Z\")\"" > ./Procfile
+    if [ $FETCH_LATEST ]; then
+        echo "web: RELX_REPLACE_OS_VARS=true bin/\${REL_NAME} foreground -env ERL_CRASH_DUMP \"\${ERL_CRASH_DUMP_DIR:-\$HOME}/\${INSTANCE_NAME}_boot_\$(date -u +\"%Y-%m-%dT%H:%M:%SZ%Z\")\"" > ./Procfile
+    else
+        echo "web: RELX_REPLACE_OS_VARS=true bin/\${REL_NAME}-\${REL_VSN} foreground -env ERL_CRASH_DUMP \"\${ERL_CRASH_DUMP_DIR:-\$HOME}/\${INSTANCE_NAME}_boot_\$(date -u +\"%Y-%m-%dT%H:%M:%SZ%Z\")\"" > ./Procfile
+    fi
     echo "-----> Install succeeded"
 else
     DEFAULT_OTP_VERSION="master"
