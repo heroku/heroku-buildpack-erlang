@@ -65,7 +65,9 @@ if [ $BINARY_RELEASES ]; then
             mkdir -p ${ROOT}/releases/$REL_VSN/
             cp ${cache}/${tarball} ${ROOT}/releases/$REL_VSN/$NAME.tar.gz
 
-            if [ $RELEASE_UPGRADE = true ]; then
+            ## First default RELEASE_UPGRADE to false, in case it's undefined
+            RELEASE_UPGRADE=${RELEASE_UPGRADE:=false}
+            if [ $RELEASE_UPGRADE == true ]; then
                 ${ROOT}/bin/${NAME} upgrade $REL_VSN
                 tar -xf ${cache}/${tarball} bin
             else
